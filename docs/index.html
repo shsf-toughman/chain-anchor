@@ -33,6 +33,12 @@
         .evolution { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px 24px; }
         .evolution-title { font-weight: 600; margin-bottom: 8px; color: #166534; font-size: 15px; }
         .evolution p { font-size: 14px; margin-bottom: 0; }
+        .operators { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 36px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .operators a { display: flex; align-items: center; text-decoration: none; color: #1a1a2e; }
+        .operators img { width: 36px; height: 36px; object-fit: contain; }
+        .operators .op-name { font-size: 14px; font-weight: 600; margin-left: 8px; }
+        .operators .op-cross { color: #ccc; font-size: 18px; font-weight: 300; }
+        .operators .op-desc { width: 100%; text-align: center; font-size: 12px; color: #999; margin-top: 8px; }
         .footer { margin-top: 48px; text-align: center; color: #999; font-size: 13px; }
     </style>
 </head>
@@ -40,6 +46,19 @@
     <div class="container">
         <h1>Chain Anchor</h1>
         <p class="subtitle">自托管 FISCO BCOS 区块链的外部可验证锚定</p>
+
+        <div class="operators">
+            <a href="https://shifang.tech" target="_blank">
+                <img src="assets/logo_sf.png" alt="拾芳">
+                <span class="op-name">拾芳</span>
+            </a>
+            <span class="op-cross">&times;</span>
+            <a href="https://fight.chaojia.wang/" target="_blank">
+                <img src="assets/logo_tmr.png" alt="塔夫曼">
+                <span class="op-name">塔夫曼</span>
+            </a>
+        </div>
+        <p style="text-align: center; font-size: 12px; color: #999; margin-top: -24px; margin-bottom: 32px;">链运营方 · 技术提供与业务数据权责主体</p>
 
         <h2>为什么需要外部锚定？</h2>
         <p>我们运行自托管的 FISCO BCOS 区块链网络，用于产品溯源等业务的数据存证。由于节点由单一运营方控制，链上数据理论上可被质疑。外部锚定通过将关键哈希提交到独立的公共系统，提供不可篡改的时间证明。</p>
