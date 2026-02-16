@@ -3,17 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chain Anchor — 区块链外部锚定验证</title>
+    <title>溯源存证体系 — 塔夫曼 × 拾芳</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a2e; background: #f8f9fa; line-height: 1.7; }
         .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
-        h1 { font-size: 28px; margin-bottom: 8px; }
-        .subtitle { color: #666; margin-bottom: 40px; font-size: 15px; }
-        h2 { font-size: 18px; margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
+
+        /* 顶栏：标题左 + 运营方右 */
+        .top-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 40px; }
+        .top-title h1 { font-size: 26px; margin-bottom: 4px; }
+        .top-title .subtitle { color: #666; font-size: 14px; }
+        .top-operators { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+        .op-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #1a1a2e; gap: 3px; }
+        .op-item img { width: 30px; height: 30px; object-fit: contain; }
+        .op-item .op-name { font-size: 12px; font-weight: 600; }
+        .op-item .op-role { font-size: 10px; color: #999; white-space: nowrap; }
+        .op-cross { color: #d0d0d0; font-size: 16px; font-weight: 300; margin-bottom: 10px; }
+
+        h2 { font-size: 18px; margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
         p { margin-bottom: 12px; }
         .card { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
         .card-title { font-weight: 600; margin-bottom: 8px; }
+
+        /* 溯源流程图 */
+        .trace-flow { display: flex; align-items: stretch; gap: 0; margin: 20px 0; }
+        .trace-step { flex: 1; text-align: center; padding: 16px 10px; background: #fff; position: relative; border: 1px solid #e8e8e8; }
+        .trace-step:first-child { border-radius: 8px 0 0 8px; }
+        .trace-step:last-child { border-radius: 0 8px 8px 0; }
+        .trace-step-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+        .trace-step-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .trace-step-desc { font-size: 11px; color: #888; line-height: 1.4; }
+        .trace-arrow { display: flex; align-items: center; color: #ccc; font-size: 14px; padding: 0 2px; }
+
+        /* 防篡改卡 */
+        .tamper-card { background: linear-gradient(135deg, #f0f7ff, #f8f9fa); border: 1px solid #d0e3f7; border-radius: 8px; padding: 20px 24px; margin: 16px 0; }
+        .tamper-card p { font-size: 14px; margin-bottom: 0; }
+        .tamper-card strong { color: #1e40af; }
+
+        /* 分隔 */
+        .section-divider { text-align: center; margin: 44px 0 8px; color: #bbb; font-size: 13px; letter-spacing: 2px; }
+
+        /* 三层 */
         .layers { display: grid; gap: 12px; }
         .layer { display: flex; align-items: center; gap: 12px; }
         .layer-badge { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; }
@@ -23,9 +53,13 @@
         .layer-text { font-size: 14px; }
         .layer-text strong { display: block; }
         .layer-text span { color: #666; }
+
+        /* 流程 */
         .flow { text-align: center; padding: 20px 0; }
         .flow-arrow { color: #999; font-size: 20px; margin: 4px 0; display: block; }
         .flow-step { display: inline-block; background: #e8f4f8; border-radius: 6px; padding: 8px 20px; font-size: 14px; font-weight: 500; }
+
+        /* 声明 */
         .disclaimer { background: #fffbeb; border: 1px solid #f5d990; border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; }
         .disclaimer-title { font-weight: 600; margin-bottom: 8px; color: #92400e; font-size: 15px; }
         .disclaimer p { font-size: 14px; margin-bottom: 8px; }
@@ -33,35 +67,78 @@
         .evolution { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px 24px; }
         .evolution-title { font-weight: 600; margin-bottom: 8px; color: #166534; font-size: 15px; }
         .evolution p { font-size: 14px; margin-bottom: 0; }
-        .operators { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 36px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-        .operators a { display: flex; align-items: center; text-decoration: none; color: #1a1a2e; }
-        .operators img { width: 36px; height: 36px; object-fit: contain; }
-        .operators .op-name { font-size: 14px; font-weight: 600; margin-left: 8px; }
-        .operators .op-cross { color: #ccc; font-size: 18px; font-weight: 300; }
-        .operators .op-desc { width: 100%; text-align: center; font-size: 12px; color: #999; margin-top: 8px; }
+
         .footer { margin-top: 48px; text-align: center; color: #999; font-size: 13px; }
+
+        /* 移动端 */
+        @media (max-width: 520px) {
+            .top-bar { flex-direction: column; gap: 16px; }
+            .top-operators { align-self: flex-start; }
+            .trace-flow { flex-direction: column; gap: 0; }
+            .trace-step { border-radius: 0 !important; }
+            .trace-step:first-child { border-radius: 8px 8px 0 0 !important; }
+            .trace-step:last-child { border-radius: 0 0 8px 8px !important; }
+            .trace-arrow { justify-content: center; padding: 2px 0; transform: rotate(90deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Chain Anchor</h1>
-        <p class="subtitle">自托管 FISCO BCOS 区块链的外部可验证锚定</p>
 
-        <div class="operators">
-            <a href="https://shifang.tech" target="_blank">
-                <img src="assets/logo_sf.png" alt="拾芳">
-                <span class="op-name">拾芳</span>
-            </a>
-            <span class="op-cross">&times;</span>
-            <a href="https://fight.chaojia.wang/" target="_blank">
-                <img src="assets/logo_tmr.png" alt="塔夫曼">
-                <span class="op-name">塔夫曼</span>
-            </a>
+        <!-- 顶栏 -->
+        <div class="top-bar">
+            <div class="top-title">
+                <h1>溯源存证体系</h1>
+                <p class="subtitle">产品从生产到交付，每一步都有链上存证</p>
+            </div>
+            <div class="top-operators">
+                <a class="op-item" href="https://fight.chaojia.wang/" target="_blank">
+                    <img src="assets/logo_tmr.png" alt="塔夫曼">
+                    <span class="op-name">塔夫曼</span>
+                    <span class="op-role">品牌与数据权责方</span>
+                </a>
+                <span class="op-cross">&times;</span>
+                <a class="op-item" href="https://shifang.tech" target="_blank">
+                    <img src="assets/logo_sf.png" alt="拾芳">
+                    <span class="op-name">拾芳</span>
+                    <span class="op-role">链技术与运维方</span>
+                </a>
+            </div>
         </div>
-        <p style="text-align: center; font-size: 12px; color: #999; margin-top: -24px; margin-bottom: 32px;">链运营方 · 技术提供与业务数据权责主体</p>
 
-        <h2>为什么需要外部锚定？</h2>
-        <p>我们运行自托管的 FISCO BCOS 区块链网络，用于产品溯源等业务的数据存证。由于节点由单一运营方控制，链上数据理论上可被质疑。外部锚定通过将关键哈希提交到独立的公共系统，提供不可篡改的时间证明。</p>
+        <!-- 第一部分：溯源存证原理 -->
+        <h2>溯源存证如何工作</h2>
+        <p>你在扫码页看到的每一个溯源节点（生产、质检、发货……），背后都经历了同一个过程：</p>
+
+        <div class="trace-flow">
+            <div class="trace-step">
+                <span class="trace-step-icon">&#128196;</span>
+                <div class="trace-step-title">操作数据</div>
+                <div class="trace-step-desc">时间、批次、操作人等业务数据</div>
+            </div>
+            <div class="trace-arrow">&#8594;</div>
+            <div class="trace-step">
+                <span class="trace-step-icon">&#128272;</span>
+                <div class="trace-step-title">SHA-256 指纹</div>
+                <div class="trace-step-desc">生成唯一数据指纹，任何改动都会导致指纹完全不同</div>
+            </div>
+            <div class="trace-arrow">&#8594;</div>
+            <div class="trace-step">
+                <span class="trace-step-icon">&#9939;</span>
+                <div class="trace-step-title">写入区块链</div>
+                <div class="trace-step-desc">指纹提交至 FISCO&nbsp;BCOS 链，区块之间链式锁定</div>
+            </div>
+        </div>
+
+        <div class="tamper-card">
+            <p><strong>为什么很难篡改？</strong> 区块链的每个区块都包含前一个区块的哈希。修改任何历史数据，指纹就对不上，后续区块全部断裂。你可以在扫码页展开「上链源数据」，自行计算 SHA-256 验证指纹是否吻合。</p>
+        </div>
+
+        <!-- 过渡 -->
+        <div class="section-divider">- - - 进一步了解 - - -</div>
+
+        <h2>外部锚定：证明链本身的时间线</h2>
+        <p>以上机制保障了链上数据的完整性。但这条链由拾芳自托管运维，节点尚未对外开放——链上数据理论上可被质疑。外部锚定通过将关键哈希提交到独立的公共系统，提供不可篡改的时间证明。</p>
 
         <h2>三层互证架构</h2>
         <div class="layers">
@@ -87,7 +164,7 @@
                 <div class="layer">
                     <div class="layer-badge l3">3</div>
                     <div class="layer-text">
-                        <strong>OpenTimestamps → Bitcoin</strong>
+                        <strong>OpenTimestamps &rarr; Bitcoin</strong>
                         <span>区块哈希锚定至比特币网络，获得密码学级别的时间证明</span>
                     </div>
                 </div>
@@ -97,11 +174,11 @@
         <h2>每日锚定流程</h2>
         <div class="flow">
             <div class="flow-step">获取 FISCO BCOS 最新区块哈希</div>
-            <span class="flow-arrow">↓</span>
+            <span class="flow-arrow">&darr;</span>
             <div class="flow-step">提交至 OpenTimestamps 日历服务器</div>
-            <span class="flow-arrow">↓</span>
+            <span class="flow-arrow">&darr;</span>
             <div class="flow-step">记录写入本仓库并自动推送</div>
-            <span class="flow-arrow">↓</span>
+            <span class="flow-arrow">&darr;</span>
             <div class="flow-step">OTS 服务器在 Bitcoin 出块后完成锚定</div>
         </div>
 
@@ -132,7 +209,7 @@
             <p>数据每日自动更新 · 任何人均可独立验证</p>
             <p style="margin-top: 8px;">
                 <a href="https://github.com/shsf-toughman/chain-anchor" style="color: #3b82f6; text-decoration: none;">
-                    查看锚定数据与验证文档 →
+                    查看锚定数据与验证文档 &rarr;
                 </a>
             </p>
         </div>
