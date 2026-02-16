@@ -26,8 +26,13 @@
         .flow { text-align: center; padding: 20px 0; }
         .flow-arrow { color: #999; font-size: 20px; margin: 4px 0; display: block; }
         .flow-step { display: inline-block; background: #e8f4f8; border-radius: 6px; padding: 8px 20px; font-size: 14px; font-weight: 500; }
-        .verify-link { display: inline-block; margin-top: 24px; background: #1a1a2e; color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; }
-        .verify-link:hover { background: #2d2d4e; }
+        .disclaimer { background: #fffbeb; border: 1px solid #f5d990; border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; }
+        .disclaimer-title { font-weight: 600; margin-bottom: 8px; color: #92400e; font-size: 15px; }
+        .disclaimer p { font-size: 14px; margin-bottom: 8px; }
+        .disclaimer p:last-child { margin-bottom: 0; }
+        .evolution { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px 24px; }
+        .evolution-title { font-weight: 600; margin-bottom: 8px; color: #166534; font-size: 15px; }
+        .evolution p { font-size: 14px; margin-bottom: 0; }
         .footer { margin-top: 48px; text-align: center; color: #999; font-size: 13px; }
     </style>
 </head>
@@ -83,6 +88,18 @@
 
         <p style="font-size: 14px; color: #666; text-align: center;">一个区块哈希隐式承诺了该链上从创世块到当前块的所有交易——覆盖所有业务。</p>
 
+        <h2>能证明什么，不能证明什么</h2>
+        <div class="disclaimer">
+            <p class="disclaimer-title">诚实声明</p>
+            <p>本机制能证明：链上数据在锚定时间点确实存在，且此后未被篡改。</p>
+            <p>本机制不能证明：链上数据是否如实反映了真实业务事件。当所有节点由同一运营方控制时，运营方理论上可以先构造数据再上链锚定，时间线仍然成立。</p>
+            <p>这一局限性只能通过引入不受运营方控制的独立节点来消除。</p>
+        </div>
+        <div class="evolution">
+            <p class="evolution-title">当前价值与演进路径</p>
+            <p>外部锚定锁定了时间线，为将来引入独立节点或公开链数据时，证明历史记录不是"事后补的"提供了基础。当独立第三方节点加入网络后，信任链条将完全闭合。</p>
+        </div>
+
         <h2>如何验证</h2>
         <div class="card">
             <p class="card-title">独立验证步骤</p>
@@ -92,7 +109,7 @@
             <p style="font-size: 14px; color: #666; margin-bottom: 0;">详细步骤请参阅仓库 README。</p>
         </div>
 
-	<div class="footer">
+        <div class="footer">
             <p>数据每日自动更新 · 任何人均可独立验证</p>
             <p style="margin-top: 8px;">
                 <a href="https://github.com/shsf-toughman/chain-anchor" style="color: #3b82f6; text-decoration: none;">

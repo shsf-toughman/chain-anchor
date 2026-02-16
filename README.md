@@ -1,39 +1,59 @@
 # Chain Anchor
 
-Public verifiable anchoring for self-hosted FISCO BCOS blockchain.
+自托管 FISCO BCOS 区块链的外部可验证锚定。
 
-## What is this?
+[English](README.en.md)
 
-This repository serves as **tamper-evident proof** that our FISCO BCOS blockchain data existed at specific points in time. Since we operate a self-hosted 4-node FISCO BCOS network, an external anchoring mechanism is necessary to prevent disputes about data fabrication.
+## 这是什么？
 
-## How it works
+本仓库是我们自托管 FISCO BCOS 区块链的**防篡改时间证明**。我们运营一个单机 4 节点的 FISCO BCOS 网络，用于产品溯源等多项业务的数据存证。由于节点由单一运营方控制，需要外部锚定机制来建立可验证的时间线。
+
+## 工作原理
 
 ```
-FISCO BCOS (self-hosted)        External Anchoring
+FISCO BCOS (自托管)              外部锚定
 ┌─────────────────────┐     ┌──────────────────────────┐
-│  All business data   │     │  Daily at 02:00 UTC+8:   │
-│  across all apps     │     │                          │
-│         │            │     │  1. Fetch latest block   │
-│         ▼            │     │  2. Submit blockHash     │
-│  Sealed in blocks    │────▶│     to OpenTimestamps    │
-│  with blockHash      │     │  3. Commit to this repo  │
+│  所有业务数据         │     │  每日 02:00 (UTC+8):     │
+│  跨所有应用           │     │                          │
+│         │            │     │  1. 获取最新区块          │
+│         ▼            │     │  2. 提交 blockHash       │
+│  封装在区块中         │────▶│     至 OpenTimestamps    │
+│  以 blockHash 链接    │     │  3. 提交至本仓库         │
 └─────────────────────┘     └──────────────────────────┘
 ```
 
-**One daily blockHash anchors the entire chain** — every transaction from every application, from genesis block to the anchored block, is implicitly committed by that single hash.
+**每日一个 blockHash 锚定整条链**——从创世块到锚定块的所有应用、所有交易，都被这一个哈希隐式承诺。
 
-## Directory structure
+## 能证明什么，不能证明什么
+
+**能证明：**
+- 在某个时间点，链上确实存在这些数据（时间存在性证明）
+- 数据未被事后篡改（锚定后的完整性）
+- 锚定时间线是连续的（每日记录 + Bitcoin 时间戳）
+
+**不能证明：**
+- 链上数据是否反映了真实发生的业务事件
+- 运营方在数据上链前是否如实记录
+
+**根本原因：** 当链的所有节点由同一运营方控制时，运营方可以先构造数据、再上链、再锚定，时间线完全成立。这个局限性只能通过引入独立第三方节点来消除。
+
+**当前方案的价值：**
+1. **锁定时间线** — 将来引入第三方节点后，历史锚定记录能证明数据不是"事后补的"
+2. **提高篡改成本** — 篡改需同时搞定私链 + GitHub 历史 + Bitcoin OTS 记录
+3. **透明姿态** — 主动做外部锚定，为将来公开预埋信任基础
+
+## 目录结构
 
 ```
-anchors/          — Daily anchor records (JSON)
+anchors/          — 每日锚定记录 (JSON)
   └── YYYY/MM/DD.json
-proofs/           — OpenTimestamps proof files
+proofs/           — OpenTimestamps 证明文件
   └── YYYY/MM/DD.json.ots
-docs/             — GitHub Pages public site
+docs/             — GitHub Pages 公开页面
   └── index.html
 ```
 
-## Anchor record format
+## 锚定记录格式
 
 ```json
 {
@@ -43,51 +63,52 @@ docs/             — GitHub Pages public site
 }
 ```
 
-## How to verify
+## 如何验证
 
-### Prerequisites
+### 前置条件
 
 ```bash
 pip install opentimestamps-client
 ```
 
-### Step 1: Verify OTS proof against Bitcoin
+### 第一步：验证 OTS 证明
 
 ```bash
 ots verify proofs/2026/02/16.json.ots
 ```
 
-This confirms the blockHash was submitted to Bitcoin's blockchain before a certain time.
+确认 blockHash 在某个 Bitcoin 区块之前已被提交。
 
-### Step 2: Confirm blockHash matches your chain
+### 第二步：比对 blockHash
 
-Query your FISCO BCOS node for the same block number:
+查询 FISCO BCOS 节点获取对应区块：
 
 ```bash
-# Via WeBASE-Front API
-curl http://<webase-url>/WeBASE-Front/1/web3/blockByNumber/<groupId>/<blockNumber>
+curl http://<webase-url>/WeBASE-Front/1/web3/blockByNumber/<blockNumber>
 ```
 
-Compare the returned `hash` field with `blockHash` in the anchor record. They must match.
+返回的 `hash` 字段应与锚定记录中的 `blockHash` 完全一致。
 
-### Step 3: Verify a specific transaction existed before the anchor
+### 第三步：验证特定交易的存在时间
 
-1. Find which block contains your transaction (by `tx_hash` or `block_number` stored in your application database).
-2. Confirm that block number < anchored block number.
-3. Since blockHash chains are sequential, the anchored blockHash commits to all prior blocks.
+1. 查找目标交易所在的区块号（通过应用数据库中的 `tx_hash` 或 `block_number`）
+2. 确认该区块号 < 锚定区块号
+3. 由于区块哈希的链式结构，锚定的 blockHash 承诺了所有之前的区块
 
-**Conclusion:** Your transaction provably existed before the OTS-anchored Bitcoin timestamp.
+**结论：** 该交易可证明存在于 OTS 锚定的 Bitcoin 时间戳之前。
 
-## Trust model
+## 信任模型
 
-| Layer | Trust basis | Tamperable? |
-|-------|------------|-------------|
-| FISCO BCOS (self-hosted) | Operator-controlled | Yes (single operator) |
-| This GitHub repo | GitHub's commit timestamps | Theoretically (with GitHub cooperation) |
-| OpenTimestamps → Bitcoin | Bitcoin PoW consensus | No (practically impossible) |
+| 层级 | 信任基础 | 可篡改？ |
+|------|---------|---------|
+| FISCO BCOS (自托管) | 运营方控制 | 是（单一运营方） |
+| 本 GitHub 仓库 | GitHub 提交时间戳 | 理论上可以（需 GitHub 配合） |
+| OpenTimestamps → Bitcoin | Bitcoin PoW 共识 | 否（实际不可能） |
 
-The three layers reinforce each other. Even if one layer is compromised, the remaining two provide independent evidence.
+三层相互印证。即使某一层被突破，其余两层仍提供独立证据。
 
-## License
+**演进路径：** 当引入独立节点加入 FISCO BCOS 网络后，第一层将从"运营方控制"升级为"多方共识"，届时整个信任链条将完全闭合。
 
-This repository and its contents are public for transparency and verification purposes.
+## 许可
+
+本仓库及其内容公开，用于透明性和验证目的。
