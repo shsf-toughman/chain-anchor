@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chain Anchor — 区块链外部锚定验证</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a2e; background: #f8f9fa; line-height: 1.7; }
+        .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: #666; margin-bottom: 40px; font-size: 15px; }
+        h2 { font-size: 18px; margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
+        p { margin-bottom: 12px; }
+        .card { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .card-title { font-weight: 600; margin-bottom: 8px; }
+        .layers { display: grid; gap: 12px; }
+        .layer { display: flex; align-items: center; gap: 12px; }
+        .layer-badge { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; }
+        .layer-badge.l1 { background: #3b82f6; }
+        .layer-badge.l2 { background: #8b5cf6; }
+        .layer-badge.l3 { background: #f59e0b; }
+        .layer-text { font-size: 14px; }
+        .layer-text strong { display: block; }
+        .layer-text span { color: #666; }
+        .flow { text-align: center; padding: 20px 0; }
+        .flow-arrow { color: #999; font-size: 20px; margin: 4px 0; display: block; }
+        .flow-step { display: inline-block; background: #e8f4f8; border-radius: 6px; padding: 8px 20px; font-size: 14px; font-weight: 500; }
+        .verify-link { display: inline-block; margin-top: 24px; background: #1a1a2e; color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; }
+        .verify-link:hover { background: #2d2d4e; }
+        .footer { margin-top: 48px; text-align: center; color: #999; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chain Anchor</h1>
+        <p class="subtitle">自托管 FISCO BCOS 区块链的外部可验证锚定</p>
+
+        <h2>为什么需要外部锚定？</h2>
+        <p>我们运行自托管的 FISCO BCOS 区块链网络，用于产品溯源等业务的数据存证。由于节点由单一运营方控制，链上数据理论上可被质疑。外部锚定通过将关键哈希提交到独立的公共系统，提供不可篡改的时间证明。</p>
+
+        <h2>三层互证架构</h2>
+        <div class="layers">
+            <div class="card">
+                <div class="layer">
+                    <div class="layer-badge l1">1</div>
+                    <div class="layer-text">
+                        <strong>FISCO BCOS 区块链</strong>
+                        <span>业务数据存证，完整的交易历史和区块链式哈希</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="layer">
+                    <div class="layer-badge l2">2</div>
+                    <div class="layer-text">
+                        <strong>GitHub 公开仓库</strong>
+                        <span>每日自动提交区块哈希，形成公开可审计的时间线</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="layer">
+                    <div class="layer-badge l3">3</div>
+                    <div class="layer-text">
+                        <strong>OpenTimestamps → Bitcoin</strong>
+                        <span>区块哈希锚定至比特币网络，获得密码学级别的时间证明</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>每日锚定流程</h2>
+        <div class="flow">
+            <div class="flow-step">获取 FISCO BCOS 最新区块哈希</div>
+            <span class="flow-arrow">↓</span>
+            <div class="flow-step">提交至 OpenTimestamps 日历服务器</div>
+            <span class="flow-arrow">↓</span>
+            <div class="flow-step">记录写入本仓库并自动推送</div>
+            <span class="flow-arrow">↓</span>
+            <div class="flow-step">OTS 服务器在 Bitcoin 出块后完成锚定</div>
+        </div>
+
+        <p style="font-size: 14px; color: #666; text-align: center;">一个区块哈希隐式承诺了该链上从创世块到当前块的所有交易——覆盖所有业务。</p>
+
+        <h2>如何验证</h2>
+        <div class="card">
+            <p class="card-title">独立验证步骤</p>
+            <p style="font-size: 14px;">1. 安装 <code>opentimestamps-client</code>，运行 <code>ots verify</code> 验证 OTS 证明</p>
+            <p style="font-size: 14px;">2. 比对锚定记录中的 blockHash 与链上实际值是否一致</p>
+            <p style="font-size: 14px;">3. 确认目标交易所在区块号小于锚定区块号</p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 0;">详细步骤请参阅仓库 README。</p>
+        </div>
+
+        <div class="footer">
+            <p>数据每日自动更新 · 任何人均可独立验证</p>
+        </div>
+    </div>
+</body>
+</html>
