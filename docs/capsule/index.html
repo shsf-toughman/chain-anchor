@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时光胶囊存证体系 — 拾芳</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a2e; background: #f8f9fa; line-height: 1.7; }
+        .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+
+        /* 顶栏 */
+        .top-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 40px; }
+        .top-title h1 { font-size: 26px; margin-bottom: 4px; }
+        .top-title .subtitle { color: #666; font-size: 14px; }
+        .top-operator { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #1a1a2e; gap: 3px; flex-shrink: 0; }
+        .top-operator img { width: 30px; height: 30px; object-fit: contain; }
+        .top-operator .op-name { font-size: 12px; font-weight: 600; }
+        .top-operator .op-role { font-size: 10px; color: #999; white-space: nowrap; }
+
+        h2 { font-size: 18px; margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
+        p { margin-bottom: 12px; }
+        code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+        .card { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .card-title { font-weight: 600; margin-bottom: 8px; }
+
+        /* 存证流程图 */
+        .trace-flow { display: flex; align-items: stretch; gap: 0; margin: 20px 0; }
+        .trace-step { flex: 1; text-align: center; padding: 16px 10px; background: #fff; position: relative; border: 1px solid #e8e8e8; }
+        .trace-step:first-child { border-radius: 8px 0 0 8px; }
+        .trace-step:last-child { border-radius: 0 8px 8px 0; }
+        .trace-step-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+        .trace-step-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .trace-step-desc { font-size: 11px; color: #888; line-height: 1.4; }
+        .trace-arrow { display: flex; align-items: center; color: #ccc; font-size: 14px; padding: 0 2px; }
+
+        /* 防篡改卡 */
+        .tamper-card { background: linear-gradient(135deg, #f3f0ff, #f8f9fa); border: 1px solid #d5ccf7; border-radius: 8px; padding: 20px 24px; margin: 16px 0; }
+        .tamper-card p { font-size: 14px; margin-bottom: 0; }
+        .tamper-card strong { color: #5b21b6; }
+
+        /* 分隔 */
+        .section-divider { text-align: center; margin: 44px 0 8px; color: #bbb; font-size: 13px; letter-spacing: 2px; }
+
+        /* 三层 */
+        .layers { display: grid; gap: 12px; }
+        .layer { display: flex; align-items: center; gap: 12px; }
+        .layer-badge { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; }
+        .layer-badge.l1 { background: #7c3aed; }
+        .layer-badge.l2 { background: #3b82f6; }
+        .layer-badge.l3 { background: #f59e0b; }
+        .layer-text { font-size: 14px; }
+        .layer-text strong { display: block; }
+        .layer-text span { color: #666; }
+
+        /* 流程 */
+        .flow { text-align: center; padding: 20px 0; }
+        .flow-arrow { color: #999; font-size: 20px; margin: 4px 0; display: block; }
+        .flow-step { display: inline-block; background: #f3f0ff; border-radius: 6px; padding: 8px 20px; font-size: 14px; font-weight: 500; }
+
+        /* 声明 */
+        .disclaimer { background: #fffbeb; border: 1px solid #f5d990; border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; }
+        .disclaimer-title { font-weight: 600; margin-bottom: 8px; color: #92400e; font-size: 15px; }
+        .disclaimer p { font-size: 14px; margin-bottom: 8px; }
+        .disclaimer p:last-child { margin-bottom: 0; }
+        .evolution { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px 24px; }
+        .evolution-title { font-weight: 600; margin-bottom: 8px; color: #166534; font-size: 15px; }
+        .evolution p { font-size: 14px; margin-bottom: 0; }
+
+        .footer { margin-top: 48px; text-align: center; color: #999; font-size: 13px; }
+
+        /* 移动端 */
+        @media (max-width: 520px) {
+            .top-bar { flex-direction: column; gap: 16px; }
+            .trace-flow { flex-direction: column; gap: 0; }
+            .trace-step { border-radius: 0 !important; }
+            .trace-step:first-child { border-radius: 8px 8px 0 0 !important; }
+            .trace-step:last-child { border-radius: 0 0 8px 8px !important; }
+            .trace-arrow { justify-content: center; padding: 2px 0; transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- 顶栏 -->
+        <div class="top-bar">
+            <div class="top-title">
+                <h1>时光胶囊存证体系</h1>
+                <p class="subtitle">每一颗封存的胶囊，都有链上存证保护</p>
+            </div>
+            <a class="top-operator" href="https://shifang.tech" target="_blank">
+                <img src="../assets/logo_sf.png" alt="拾芳">
+                <span class="op-name">拾芳</span>
+                <span class="op-role">开发与运维方</span>
+            </a>
+        </div>
+
+        <!-- 第一部分：存证原理 -->
+        <h2>胶囊存证如何工作</h2>
+        <p>当你封存一颗时光胶囊或预言胶囊时，系统会将胶囊内容生成不可逆的数字指纹，写入区块链：</p>
+
+        <div class="trace-flow">
+            <div class="trace-step">
+                <span class="trace-step-icon">&#128236;</span>
+                <div class="trace-step-title">封存胶囊</div>
+                <div class="trace-step-desc">你的文字、图片等内容 + 封存时间</div>
+            </div>
+            <div class="trace-arrow">&#8594;</div>
+            <div class="trace-step">
+                <span class="trace-step-icon">&#128272;</span>
+                <div class="trace-step-title">SHA-256 指纹</div>
+                <div class="trace-step-desc">内容生成唯一指纹，任何改动都会导致指纹完全不同</div>
+            </div>
+            <div class="trace-arrow">&#8594;</div>
+            <div class="trace-step">
+                <span class="trace-step-icon">&#9939;</span>
+                <div class="trace-step-title">写入区块链</div>
+                <div class="trace-step-desc">指纹提交至 FISCO&nbsp;BCOS 链，区块之间链式锁定</div>
+            </div>
+        </div>
+
+        <div class="tamper-card">
+            <p><strong>为什么很难篡改？</strong> 区块链的每个区块都包含前一个区块的哈希。修改任何历史数据，指纹就对不上，后续区块全部断裂。你可以在胶囊详情页查看存证信息，自行计算 SHA-256 验证指纹是否吻合。</p>
+        </div>
+
+        <h2>存证了什么</h2>
+        <div class="card">
+            <p class="card-title">时光胶囊</p>
+            <p style="font-size: 14px; margin-bottom: 0;">胶囊的完整内容（文字、图文）+ 创建时间，序列化后计算 SHA-256 哈希上链。</p>
+        </div>
+        <div class="card">
+            <p class="card-title">预言胶囊</p>
+            <p style="font-size: 14px; margin-bottom: 0;">「预测的事情」+「我的结论」+ 创建时间，以语义化字段上链，便于解封后对照验证。</p>
+        </div>
+
+        <!-- 过渡 -->
+        <div class="section-divider">- - - 进一步了解 - - -</div>
+
+        <h2>外部锚定：证明链本身的时间线</h2>
+        <p>以上机制保障了链上数据的完整性。但这条链由拾芳自托管运维，节点尚未对外开放——链上数据理论上可被质疑。外部锚定通过将关键哈希提交到独立的公共系统，提供不可篡改的时间证明。</p>
+
+        <h2>三层互证架构</h2>
+        <div class="layers">
+            <div class="card">
+                <div class="layer">
+                    <div class="layer-badge l1">1</div>
+                    <div class="layer-text">
+                        <strong>FISCO BCOS 区块链</strong>
+                        <span>胶囊内容指纹存证，完整的交易历史和区块链式哈希</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="layer">
+                    <div class="layer-badge l2">2</div>
+                    <div class="layer-text">
+                        <strong>GitHub 公开仓库</strong>
+                        <span>每日自动提交区块哈希，形成公开可审计的时间线</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="layer">
+                    <div class="layer-badge l3">3</div>
+                    <div class="layer-text">
+                        <strong>OpenTimestamps &rarr; Bitcoin</strong>
+                        <span>区块哈希锚定至比特币网络，获得密码学级别的时间证明</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>每日锚定流程</h2>
+        <div class="flow">
+            <div class="flow-step">获取 FISCO BCOS 最新区块哈希</div>
+            <span class="flow-arrow">&darr;</span>
+            <div class="flow-step">提交至 OpenTimestamps 日历服务器</div>
+            <span class="flow-arrow">&darr;</span>
+            <div class="flow-step">记录写入公开仓库并自动推送</div>
+            <span class="flow-arrow">&darr;</span>
+            <div class="flow-step">OTS 服务器在 Bitcoin 出块后完成锚定</div>
+        </div>
+
+        <p style="font-size: 14px; color: #666; text-align: center;">一个区块哈希隐式承诺了该链上从创世块到当前块的所有交易——覆盖所有胶囊。</p>
+
+        <h2>能证明什么，不能证明什么</h2>
+        <div class="disclaimer">
+            <p class="disclaimer-title">诚实声明</p>
+            <p>本机制能证明：你的胶囊内容在封存时间点确实存在，且此后未被篡改。</p>
+            <p>本机制不能证明：内容是否如实反映了你当时的真实想法。当所有节点由同一运营方控制时，运营方理论上可以先构造数据再上链锚定，时间线仍然成立。</p>
+            <p>这一局限性只能通过引入不受运营方控制的独立节点来消除。</p>
+        </div>
+        <div class="evolution">
+            <p class="evolution-title">当前价值与演进路径</p>
+            <p>外部锚定锁定了时间线，为将来引入独立节点或公开链数据时，证明历史记录不是"事后补的"提供了基础。当独立第三方节点加入网络后，信任链条将完全闭合。</p>
+        </div>
+
+        <h2>如何验证</h2>
+        <div class="card">
+            <p class="card-title">独立验证步骤</p>
+            <p style="font-size: 14px;">1. 在胶囊详情页查看存证哈希（content_hash）和区块号（block_number）</p>
+            <p style="font-size: 14px;">2. 使用胶囊原始内容自行计算 SHA-256，比对哈希是否一致</p>
+            <p style="font-size: 14px;">3. 安装 <code>opentimestamps-client</code>，运行 <code>ots verify</code> 验证对应区块的 OTS 时间证明</p>
+            <p style="font-size: 14px; color: #666; margin-bottom: 0;">详细步骤请参阅仓库 README。</p>
+        </div>
+
+        <div class="footer">
+            <p>数据每日自动锚定 · 任何人均可独立验证</p>
+            <p style="margin-top: 8px;">
+                <a href="https://github.com/shsf-toughman/chain-anchor" style="color: #7c3aed; text-decoration: none;">
+                    查看锚定数据与验证文档 &rarr;
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
