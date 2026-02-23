@@ -13,10 +13,12 @@
         .top-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 40px; }
         .top-title h1 { font-size: 26px; margin-bottom: 4px; }
         .top-title .subtitle { color: #666; font-size: 14px; }
-        .top-operator { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #1a1a2e; gap: 3px; flex-shrink: 0; }
-        .top-operator img { width: 30px; height: 30px; object-fit: contain; }
-        .top-operator .op-name { font-size: 12px; font-weight: 600; }
-        .top-operator .op-role { font-size: 10px; color: #999; white-space: nowrap; }
+        .top-operators { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+        .op-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #1a1a2e; gap: 3px; }
+        .op-item img { width: 30px; height: 30px; object-fit: contain; }
+        .op-item .op-name { font-size: 12px; font-weight: 600; }
+        .op-item .op-role { font-size: 10px; color: #999; white-space: nowrap; }
+        .op-cross { color: #d0d0d0; font-size: 16px; font-weight: 300; margin-bottom: 10px; }
 
         h2 { font-size: 18px; margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
         p { margin-bottom: 12px; }
@@ -72,6 +74,7 @@
         /* 移动端 */
         @media (max-width: 520px) {
             .top-bar { flex-direction: column; gap: 16px; }
+            .top-operators { align-self: flex-start; }
             .trace-flow { flex-direction: column; gap: 0; }
             .trace-step { border-radius: 0 !important; }
             .trace-step:first-child { border-radius: 8px 8px 0 0 !important; }
@@ -89,11 +92,19 @@
                 <h1>时光胶囊存证体系</h1>
                 <p class="subtitle">每一颗封存的胶囊，都有链上存证保护</p>
             </div>
-            <a class="top-operator" href="https://shifang.tech" target="_blank">
-                <img src="../assets/logo_sf.png" alt="拾芳">
-                <span class="op-name">拾芳</span>
-                <span class="op-role">开发与运维方</span>
-            </a>
+            <div class="top-operators">
+                <a class="op-item" href="https://capsule.shifang.tech" target="_blank">
+                    <img src="../assets/logo_capsule.png" alt="时光胶囊">
+                    <span class="op-name">时光胶囊</span>
+                    <span class="op-role">产品与数据方</span>
+                </a>
+                <span class="op-cross">&times;</span>
+                <a class="op-item" href="https://shifang.tech" target="_blank">
+                    <img src="../assets/logo_sf.png" alt="拾芳">
+                    <span class="op-name">拾芳</span>
+                    <span class="op-role">链技术与运维方</span>
+                </a>
+            </div>
         </div>
 
         <!-- 第一部分：存证原理 -->
